@@ -8,7 +8,6 @@ venv/
 env/
 
 # Datos del lakehouse (regenerables con `python main.py`)
-# Comentar las dos líneas siguientes si quieren versionar los Parquet
 lakehouse/bronze/*.parquet
 lakehouse/silver/*.parquet
 lakehouse/gold/*.parquet
@@ -26,6 +25,5 @@ dbt/logs/
 .DS_Store
 *.swp
 
-# Reportes generados
-docs/reporte_calidad_silver.txt
-docs/benchmark_resultados.txt
+# Nota: docs/reporte_calidad_silver.txt y docs/benchmark_resultados.txt
+# SE VERSIONAN (son entregables de la rubrica del Taller #3).
