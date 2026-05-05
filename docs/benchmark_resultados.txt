@@ -1,0 +1,11 @@
+Query                                            SQLite (ms)    DuckDB (ms)     Factor
+------------------------------------------------------------------------------------------
+Agregado mensual (group by)                            63.48          10.42      6.09x
+Full-scan COUNT+SUM                                     6.58           5.56      1.18x
+
+--- Lectura honesta del resultado ---
+Con ~100K-200K filas y un dataset que cabe en RAM, la diferencia es
+moderada. DuckDB suele ganar 2-10x en queries con muchos GROUP BY.
+El beneficio columnar se dispara con datasets >1M filas y queries
+que escanean muchas filas pero pocas columnas, porque Parquet solo
+lee las columnas referenciadas y aprovecha compresion RLE/dictionary.
