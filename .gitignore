@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Datos del lakehouse (regenerables con `python main.py`)
+# Comentar las dos líneas siguientes si quieren versionar los Parquet
+lakehouse/bronze/*.parquet
+lakehouse/silver/*.parquet
+lakehouse/gold/*.parquet
+lakehouse/*.duckdb
+lakehouse/*.duckdb.wal
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# Editores e IDE
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Reportes generados
+docs/reporte_calidad_silver.txt
+docs/benchmark_resultados.txt

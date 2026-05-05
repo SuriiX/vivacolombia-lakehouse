@@ -1,0 +1,29 @@
+version: 2
+
+# Las "sources" en dbt son los Parquet de Bronze generados por extract.py.
+# Cada source apunta al alias _latest.parquet (siempre el más reciente).
+sources:
+  - name: bronze
+    description: "Capa Bronze del lakehouse — datos raw extraídos del OLTP."
+    meta:
+      external_location: "../lakehouse/bronze"
+    tables:
+      - name: reservas
+        description: "Reservas raw — incluye duplicados y nulos a propósito."
+        external:
+          location: "../lakehouse/bronze/reservas_latest.parquet"
+      - name: vuelos
+        external:
+          location: "../lakehouse/bronze/vuelos_latest.parquet"
+      - name: rutas
+        external:
+          location: "../lakehouse/bronze/rutas_latest.parquet"
+      - name: canales
+        external:
+          location: "../lakehouse/bronze/canales_latest.parquet"
+      - name: pasajeros
+        external:
+          location: "../lakehouse/bronze/pasajeros_latest.parquet"
+      - name: pagos
+        external:
+          location: "../lakehouse/bronze/pagos_latest.parquet"

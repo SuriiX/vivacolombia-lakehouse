@@ -1,0 +1,12 @@
+# Perfil dbt para correr DuckDB local sobre el lakehouse del proyecto.
+# Para usarlo:
+#   export DBT_PROFILES_DIR=$(pwd)/dbt
+#   cd dbt && dbt run
+
+vivacolombia:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../lakehouse/analytics.duckdb"
+      threads: 4

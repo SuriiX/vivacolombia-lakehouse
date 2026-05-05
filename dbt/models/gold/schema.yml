@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: dim_tiempo
+    description: "Calendario diario para análisis temporal."
+    columns:
+      - name: tiempo_sk
+        description: "Surrogate key incremental."
+        tests:
+          - not_null
+          - unique
+      - name: fecha
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_vuelo
+    columns:
+      - name: vuelo_sk
+        tests: [not_null, unique]
+      - name: vuelo_id
+        tests: [not_null, unique]
+
+  - name: dim_ruta
+    columns:
+      - name: ruta_sk
+        tests: [not_null, unique]
+      - name: ruta_id
+        tests: [not_null, unique]
+
+  - name: dim_canal
+    columns:
+      - name: canal_sk
+        tests: [not_null, unique]
+      - name: canal_id
+        tests: [not_null, unique]
+
+  - name: dim_pasajero
+    description: "DIM con SCD Tipo 2 — natural key pasajero_id, surrogate pasajero_sk."
+    columns:
+      - name: pasajero_sk
+        tests: [not_null, unique]
+      - name: pasajero_id
+        tests: [not_null]                 # NO unique — varias versiones por pasajero
+
+  - name: fact_reservas
+    description: "Tabla de hechos: 1 fila = 1 reserva (confirmada o cancelada)."
+    columns:
+      - name: reserva_id
+        tests: [not_null, unique]
+      - name: tiempo_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_tiempo')
+              field: tiempo_sk
+      - name: vuelo_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_vuelo')
+              field: vuelo_sk
+      - name: ruta_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_ruta')
+              field: ruta_sk
+      - name: pasajero_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_pasajero')
+              field: pasajero_sk
+      - name: canal_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_canal')
+              field: canal_sk
+      - name: precio_pagado
+        tests:
+          - not_null

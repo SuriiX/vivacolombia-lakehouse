@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="Arial, sans-serif">
+  <defs>
+    <style>
+      .table-header { fill: #1a3a5c; }
+      .fact-header  { fill: #c0392b; }
+      .table-body   { fill: #ecf0f1; stroke: #34495e; stroke-width: 1.2; }
+      .fact-body    { fill: #fdecea; stroke: #c0392b; stroke-width: 1.5; }
+      .header-text  { fill: white; font-weight: bold; font-size: 13px; }
+      .col-text     { fill: #2c3e50; font-size: 11px; }
+      .pk           { font-weight: bold; fill: #2980b9; }
+      .fk           { font-style: italic; fill: #8e44ad; }
+      .relation     { stroke: #34495e; stroke-width: 1.5; fill: none; }
+      .legend-text  { fill: #2c3e50; font-size: 11px; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#1a3a5c">
+    VivaColombia Mini-Lakehouse — Modelo Estrella
+  </text>
+  <text x="450" y="48" text-anchor="middle" font-size="11" fill="#7f8c8d">
+    Taller #3 · Tópicos Avanzados en Bases de Datos · ITM 2026
+  </text>
+
+  <!-- DIM_TIEMPO (top center) -->
+  <g>
+    <rect x="380" y="80" width="160" height="22" class="table-header"/>
+    <text x="460" y="96" text-anchor="middle" class="header-text">DIM_TIEMPO</text>
+    <rect x="380" y="102" width="160" height="118" class="table-body"/>
+    <text x="390" y="118" class="col-text pk">PK tiempo_sk</text>
+    <text x="390" y="133" class="col-text">fecha</text>
+    <text x="390" y="148" class="col-text">anio, trimestre, mes</text>
+    <text x="390" y="163" class="col-text">dia, dia_semana</text>
+    <text x="390" y="178" class="col-text">mes_nombre, dia_nombre</text>
+    <text x="390" y="193" class="col-text">es_fin_semana</text>
+    <text x="390" y="208" class="col-text">es_temporada_alta</text>
+  </g>
+
+  <!-- DIM_VUELO (left) -->
+  <g>
+    <rect x="60" y="270" width="160" height="22" class="table-header"/>
+    <text x="140" y="286" text-anchor="middle" class="header-text">DIM_VUELO</text>
+    <rect x="60" y="292" width="160" height="103" class="table-body"/>
+    <text x="70" y="308" class="col-text pk">PK vuelo_sk</text>
+    <text x="70" y="323" class="col-text">vuelo_id</text>
+    <text x="70" y="338" class="col-text">numero_vuelo</text>
+    <text x="70" y="353" class="col-text">aeronave</text>
+    <text x="70" y="368" class="col-text">capacidad_asientos</text>
+    <text x="70" y="383" class="col-text">aerolinea</text>
+  </g>
+
+  <!-- DIM_RUTA (right) -->
+  <g>
+    <rect x="700" y="270" width="160" height="22" class="table-header"/>
+    <text x="780" y="286" text-anchor="middle" class="header-text">DIM_RUTA</text>
+    <rect x="700" y="292" width="160" height="118" class="table-body"/>
+    <text x="710" y="308" class="col-text pk">PK ruta_sk</text>
+    <text x="710" y="323" class="col-text">ruta_id</text>
+    <text x="710" y="338" class="col-text">origen_iata, ciudad</text>
+    <text x="710" y="353" class="col-text">destino_iata, ciudad</text>
+    <text x="710" y="368" class="col-text">distancia_km</text>
+    <text x="710" y="383" class="col-text">internacional_flag</text>
+  </g>
+
+  <!-- FACT_RESERVAS (center) -->
+  <g>
+    <rect x="350" y="290" width="220" height="22" class="fact-header"/>
+    <text x="460" y="306" text-anchor="middle" class="header-text">FACT_RESERVAS</text>
+    <rect x="350" y="312" width="220" height="200" class="fact-body"/>
+    <text x="360" y="328" class="col-text pk">PK reserva_id</text>
+    <text x="360" y="343" class="col-text fk">FK tiempo_sk</text>
+    <text x="360" y="358" class="col-text fk">FK vuelo_sk</text>
+    <text x="360" y="373" class="col-text fk">FK ruta_sk</text>
+    <text x="360" y="388" class="col-text fk">FK pasajero_sk</text>
+    <text x="360" y="403" class="col-text fk">FK canal_sk</text>
+    <line x1="355" y1="412" x2="565" y2="412" stroke="#c0392b" stroke-width="0.8"/>
+    <text x="360" y="427" class="col-text" font-weight="bold">precio_pagado (aditiva)</text>
+    <text x="360" y="442" class="col-text" font-weight="bold">asientos_reservados (aditiva)</text>
+    <text x="360" y="457" class="col-text" font-weight="bold">descuento_aplicado (aditiva)</text>
+    <text x="360" y="472" class="col-text" font-weight="bold">dias_anticipacion (no-adit)</text>
+    <text x="360" y="487" class="col-text" font-weight="bold">es_cancelada (flag/conteo)</text>
+    <text x="360" y="502" class="col-text" font-weight="bold">fecha_reserva, fecha_vuelo</text>
+  </g>
+
+  <!-- DIM_PASAJERO (bottom-left, SCD2 highlighted) -->
+  <g>
+    <rect x="60" y="540" width="180" height="22" fill="#8e44ad"/>
+    <text x="150" y="556" text-anchor="middle" class="header-text">DIM_PASAJERO (SCD2)</text>
+    <rect x="60" y="562" width="180" height="118" fill="#f4ecf7" stroke="#8e44ad" stroke-width="1.5"/>
+    <text x="70" y="578" class="col-text pk">PK pasajero_sk</text>
+    <text x="70" y="593" class="col-text">pasajero_id (natural key)</text>
+    <text x="70" y="608" class="col-text">segmento</text>
+    <text x="70" y="623" class="col-text">pais_residencia</text>
+    <text x="70" y="638" class="col-text">valido_desde</text>
+    <text x="70" y="653" class="col-text">valido_hasta</text>
+    <text x="70" y="668" class="col-text">activo (bool)</text>
+  </g>
+
+  <!-- DIM_CANAL (bottom-right) -->
+  <g>
+    <rect x="700" y="540" width="160" height="22" class="table-header"/>
+    <text x="780" y="556" text-anchor="middle" class="header-text">DIM_CANAL</text>
+    <rect x="700" y="562" width="160" height="88" class="table-body"/>
+    <text x="710" y="578" class="col-text pk">PK canal_sk</text>
+    <text x="710" y="593" class="col-text">canal_id</text>
+    <text x="710" y="608" class="col-text">nombre</text>
+    <text x="710" y="623" class="col-text">digital_flag</text>
+    <text x="710" y="638" class="col-text">categoria</text>
+  </g>
+
+  <!-- Relations -->
+  <line x1="460" y1="220" x2="460" y2="290" class="relation"/>
+  <line x1="220" y1="343" x2="350" y2="343" class="relation"/>
+  <line x1="570" y1="343" x2="700" y2="343" class="relation"/>
+  <path d="M 240 600 Q 320 580 380 470" class="relation"/>
+  <path d="M 700 600 Q 620 580 570 470" class="relation"/>
+
+  <!-- Legend -->
+  <g transform="translate(60, 100)">
+    <text class="legend-text" font-weight="bold">Leyenda:</text>
+    <text class="legend-text" y="18" fill="#2980b9" font-weight="bold">PK</text>
+    <text class="legend-text" y="18" x="22">surrogate key</text>
+    <text class="legend-text" y="34" fill="#8e44ad" font-style="italic">FK</text>
+    <text class="legend-text" y="34" x="22">foreign key</text>
+    <text class="legend-text" y="50" fill="#c0392b">■</text>
+    <text class="legend-text" y="50" x="14">tabla de hechos</text>
+    <text class="legend-text" y="66" fill="#8e44ad">■</text>
+    <text class="legend-text" y="66" x="14">dim con SCD Tipo 2</text>
+  </g>
+</svg>
