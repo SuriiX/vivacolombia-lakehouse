@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VivaColombia · Mini-Lakehouse — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    background: linear-gradient(180deg, #0d1117, #161b22);
+  }
+  header h1 { color: var(--blue); font-size: 26px; font-weight: 700; }
+  header .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  header .meta {
+    margin-top: 12px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  header .meta span { color: var(--muted); }
+  header .meta b { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .kpi .value { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .kpi .label { color: var(--muted); font-size: 12px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi.cancel .value { color: var(--red); }
+  .kpi.ticket .value { color: var(--green); }
+  .kpi.ventana .value { color: var(--yellow); }
+  .kpi.ingresos .value { color: var(--blue); }
+  .kpi.reservas .value { color: var(--purple); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .grid .full { grid-column: 1 / -1; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .panel h2 {
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .panel .chart-wrap { position: relative; height: 320px; }
+  .panel.short .chart-wrap { height: 220px; }
+
+  /* Heatmap */
+  .heatmap { display: grid; grid-template-columns: 60px repeat(24, 1fr); gap: 2px; }
+  .heatmap .day-label,
+  .heatmap .hour-label { font-size: 10px; color: var(--muted); text-align: center; padding: 4px 2px; }
+  .heatmap .cell {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    cursor: default;
+    transition: transform .15s ease;
+    min-height: 18px;
+  }
+  .heatmap .cell:hover { transform: scale(1.4); z-index: 2; position: relative; }
+
+  /* Conversión table */
+  .conv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .conv-table th, .conv-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .conv-table th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+  .conv-table td { font-family: 'JetBrains Mono', monospace; }
+  .conv-table td.canal { text-align: left; font-weight: 600; color: var(--text); font-family: 'Inter', sans-serif; }
+  .conv-cell { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 600; }
+
+  /* Benchmark */
+  .bench-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .bench-table th, .bench-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .bench-table th { color: var(--muted); text-transform: uppercase; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
+  .bench-table td { font-family: 'JetBrains Mono', monospace; }
+  .bench-table td.factor {
+    color: var(--green);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 32px;
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge.intl { background: rgba(240, 136, 62, 0.15); color: var(--orange); border: 1px solid var(--orange); }
+  .badge.dom  { background: rgba(63, 185, 80, 0.15); color: var(--green); border: 1px solid var(--green); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>VivaColombia · Operación analítica</h1>
+  <div class="subtitle">Mini-Lakehouse · Bronze→Silver→Gold sobre Parquet · DuckDB embebido · Taller #3 ITM 2026</div>
+  <div class="meta">
+    <span>Equipo: <b>Juan Pablo Cañas</b> · <b>Owen Pérez</b></span>
+    <span>Fuente: <b>lakehouse/gold/*.parquet</b></span>
+    <span>Reservas analizadas: <b id="meta-reservas">—</b></span>
+    <span>Pasajeros con SCD2: <b id="meta-scd2">—</b></span>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi cancel">
+      <div class="value" id="kpi-cancel">—</div>
+      <div class="label">Tasa de cancelación</div>
+    </div>
+    <div class="kpi ticket">
+      <div class="value" id="kpi-ticket">—</div>
+      <div class="label">Ticket promedio (COP)</div>
+    </div>
+    <div class="kpi ventana">
+      <div class="value" id="kpi-ventana">—</div>
+      <div class="label">Ventana media de reserva</div>
+    </div>
+    <div class="kpi ingresos">
+      <div class="value" id="kpi-ingresos">—</div>
+      <div class="label">Ingresos confirmados</div>
+    </div>
+    <div class="kpi reservas">
+      <div class="value" id="kpi-confirmadas">—</div>
+      <div class="label">Reservas confirmadas</div>
+    </div>
+  </div>
+
+  <!-- Top rutas + Mensual -->
+  <div class="grid">
+    <div class="panel">
+      <h2>Top 10 rutas por ingresos (M COP)</h2>
+      <div class="chart-wrap"><canvas id="chart-rutas"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Ingresos mensuales (M COP) y tendencia</h2>
+      <div class="chart-wrap"><canvas id="chart-mensual"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Heatmap full-width -->
+  <div class="grid">
+    <div class="panel full">
+      <h2>Picos de reserva — día de la semana × hora del día</h2>
+      <div id="heatmap" class="heatmap"></div>
+    </div>
+  </div>
+
+  <!-- Conversión + Benchmark -->
+  <div class="grid">
+    <div class="panel">
+      <h2>Conversión % — canal × segmento</h2>
+      <table class="conv-table">
+        <thead><tr id="conv-header"><th>Canal</th></tr></thead>
+        <tbody id="conv-body"></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h2>Benchmark — SQLite (OLTP) vs DuckDB (columnar)</h2>
+      <table class="bench-table">
+        <thead><tr><th>Query</th><th>SQLite (ms)</th><th>DuckDB (ms)</th><th>Factor</th></tr></thead>
+        <tbody id="bench-body"></tbody>
+      </table>
+      <p style="margin-top:16px;color:var(--muted);font-size:12px;line-height:1.6">
+        Mismas consultas ejecutadas sobre el mismo dataset.
+        DuckDB lee solo las columnas necesarias del Parquet con compresión RLE/dictionary.
+        El factor crece con el tamaño del dataset.
+      </p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>
+    Web generada desde <code>docs/data.json</code> · datos reales de
+    <a href="https://github.com/SuriiX/vivacolombia-lakehouse" target="_blank">github.com/SuriiX/vivacolombia-lakehouse</a>
+    · Dashboard equivalente al de Metabase Community documentado en
+    <a href="https://github.com/SuriiX/vivacolombia-lakehouse/blob/main/docs/metabase_setup.md" target="_blank">metabase_setup.md</a>
+  </p>
+</footer>
+
+<script>
+const fmt = new Intl.NumberFormat('es-CO');
+const fmtCop = v => '$' + fmt.format(Math.round(v));
+
+fetch('data.json').then(r => r.json()).then(data => {
+
+  // ── KPIs ──────────────────────────────────────────────────────
+  document.getElementById('meta-reservas').textContent = fmt.format(data.kpis.total_reservas);
+  document.getElementById('meta-scd2').textContent =
+    `${fmt.format(data.scd2.con_versiones)} de ${fmt.format(data.scd2.pasajeros_unicos)}`;
+  document.getElementById('kpi-cancel').textContent = data.kpis.tasa_cancelacion + '%';
+  document.getElementById('kpi-ticket').textContent = '$' + fmt.format(Math.round(data.kpis.ticket_promedio / 1000)) + 'K';
+  document.getElementById('kpi-ventana').textContent = data.kpis.ventana_dias + ' días';
+  document.getElementById('kpi-ingresos').textContent = '$' + data.kpis.ingresos_B + 'B COP';
+  document.getElementById('kpi-confirmadas').textContent = fmt.format(data.kpis.confirmadas);
+
+  // ── Chart 1: Top rutas ────────────────────────────────────────
+  const rutasCtx = document.getElementById('chart-rutas');
+  new Chart(rutasCtx, {
+    type: 'bar',
+    data: {
+      labels: data.top_rutas.map(r => r.ruta),
+      datasets: [{
+        label: 'Ingresos (M COP)',
+        data: data.top_rutas.map(r => r.ingresos_M_COP),
+        backgroundColor: data.top_rutas.map(r => r.internacional_flag ? '#f0883e' : '#3fb950'),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            afterLabel: ctx => {
+              const r = data.top_rutas[ctx.dataIndex];
+              return `${fmt.format(r.asientos)} asientos · ${r.internacional_flag ? 'Internacional' : 'Doméstico'}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#c9d1d9', font: { family: 'JetBrains Mono', size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+
+  // ── Chart 2: Mensual ──────────────────────────────────────────
+  const mensualCtx = document.getElementById('chart-mensual');
+  // Tendencia simple (regresión)
+  const xs = data.mensual.map((_, i) => i);
+  const ys = data.mensual.map(m => m.ingresos_M_COP);
+  const n = xs.length;
+  const sumX = xs.reduce((a,b)=>a+b,0), sumY = ys.reduce((a,b)=>a+b,0);
+  const sumXY = xs.reduce((a,_,i)=>a+xs[i]*ys[i],0);
+  const sumXX = xs.reduce((a,b)=>a+b*b,0);
+  const m = (n*sumXY - sumX*sumY) / (n*sumXX - sumX*sumX);
+  const b = (sumY - m*sumX) / n;
+  const trend = xs.map(x => m*x + b);
+
+  new Chart(mensualCtx, {
+    type: 'line',
+    data: {
+      labels: data.mensual.map(m => m.periodo),
+      datasets: [
+        {
+          label: 'Ingresos',
+          data: data.mensual.map(m => m.ingresos_M_COP),
+          borderColor: '#58a6ff',
+          backgroundColor: 'rgba(88,166,255,0.15)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: '#58a6ff',
+        },
+        {
+          label: 'Tendencia',
+          data: trend,
+          borderColor: '#f85149',
+          borderDash: [5, 5],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#c9d1d9' } },
+      },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxRotation: 45 }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+      }
+    }
+  });
+
+  // ── Heatmap ───────────────────────────────────────────────────
+  const heatmap = document.getElementById('heatmap');
+  // Header: empty + 24 horas
+  let html = '<div></div>';
+  for (let h = 0; h < 24; h++) html += `<div class="hour-label">${String(h).padStart(2,'0')}</div>`;
+  // Calcular max para escala de color
+  const flat = data.heatmap.flatMap(d => d.valores);
+  const maxV = Math.max(...flat);
+  const minV = Math.min(...flat);
+  for (const row of data.heatmap) {
+    html += `<div class="day-label">${row.dia}</div>`;
+    for (const v of row.valores) {
+      const t = (v - minV) / (maxV - minV);
+      // YlOrRd palette
+      const r = Math.round(255);
+      const g = Math.round(255 * (1 - t * 0.85));
+      const c = `rgb(${r}, ${g}, 0)`;
+      html += `<div class="cell" style="background:${c}" title="${row.dia} ${v} reservas"></div>`;
+    }
+  }
+  heatmap.innerHTML = html;
+
+  // ── Conversión table ──────────────────────────────────────────
+  const segmentos = [...new Set(data.conversion.map(r => r.segmento))].sort();
+  const canales = [...new Set(data.conversion.map(r => r.canal))].sort();
+  const headerRow = document.getElementById('conv-header');
+  for (const s of segmentos) headerRow.insertAdjacentHTML('beforeend', `<th>${s}</th>`);
+  const tbody = document.getElementById('conv-body');
+  for (const canal of canales) {
+    let row = `<tr><td class="canal">${canal}</td>`;
+    for (const seg of segmentos) {
+      const cell = data.conversion.find(r => r.canal === canal && r.segmento === seg);
+      if (cell) {
+        const v = cell.conversion_pct;
+        // Color según valor
+        const t = (v - 85) / 10; // 85-95 rango
+        const r = Math.round(248 - t * 200);
+        const g = Math.round(81 + t * 100);
+        const bg = `rgba(${r},${g},80,0.2)`;
+        const color = v >= 92 ? '#3fb950' : v >= 90 ? '#d29922' : '#f0883e';
+        row += `<td><span class="conv-cell" style="background:${bg};color:${color}">${v}%</span></td>`;
+      } else {
+        row += '<td>—</td>';
+      }
+    }
+    row += '</tr>';
+    tbody.insertAdjacentHTML('beforeend', row);
+  }
+
+  // ── Benchmark ─────────────────────────────────────────────────
+  const benchBody = document.getElementById('bench-body');
+  for (const b of data.benchmark) {
+    benchBody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${b.query}</td>
+        <td>${b.sqlite_ms.toFixed(1)}</td>
+        <td>${b.duckdb_ms.toFixed(1)}</td>
+        <td class="factor">${b.factor.toFixed(2)}x</td>
+      </tr>`);
+  }
+}).catch(err => {
+  document.querySelector('main').innerHTML =
+    `<div class="panel"><h2 style="color:#f85149">Error cargando datos</h2><pre>${err}</pre></div>`;
+});
+</script>
+
+</body>
+</html>
