@@ -1,0 +1,23 @@
+============================================================
+ SILVER — limpieza y tipado   (2026-05-05 22:29)
+============================================================
+  rutas                12 filas → rutas_silver.parquet
+  canales               5 filas → canales_silver.parquet
+  vuelos           10,212 filas → vuelos_silver.parquet
+  pasajeros        20,000 filas → pasajeros_silver.parquet
+  pagos            91,937 filas → pagos_silver.parquet
+
+  Reservas Bronze cargadas: 100,200
+  - Nulos en canal_id resueltos: 500 -> default '4' (CALL_CENTER)
+  - Filas con FK/monto nulo eliminadas: 0
+  - Filas con precio <= 0 eliminadas:    100
+  - Filas con anticipacion negativa:     0
+  - Duplicados (reserva_id) eliminados:  200
+  reservas         99,900 filas → reservas_silver.parquet
+
+=== REPORTE DE CALIDAD SILVER ===
+Filas Bronze (reservas)  :    100,200
+Filas Silver (reservas)  :     99,900
+Filas eliminadas         :        300
+Porcentaje retenido      :      99.7%
+Monto total reservado    : $  53,299,508,718 COP
