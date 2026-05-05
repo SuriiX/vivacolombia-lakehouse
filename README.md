@@ -168,6 +168,13 @@ DBT_PROFILES_DIR=$(pwd) dbt docs generate
 DBT_PROFILES_DIR=$(pwd) dbt docs serve     # abre sitio con DAG visual
 ```
 
+### DAG visual del proyecto dbt
+
+![DAG dbt](docs/dbt_dag.svg)
+
+Generado desde `dbt/target/manifest.json` con `python scripts/build_dbt_dag.py`.
+17 nodos (6 sources + 5 silver + 6 gold) y 13 dependencias trazadas.
+
 ## Alternativa B — Metabase Community
 
 Pasos detallados en [`docs/metabase_setup.md`](docs/metabase_setup.md).
@@ -183,26 +190,19 @@ docker run -d --name metabase-vc -p 3000:3000 \
 Dashboard "VivaColombia · Operación analítica" con 5 visualizaciones:
 heatmap día×hora, ingresos mensuales, top rutas, KPIs de cancelación, pivot canal×segmento.
 
+### Vista previa del dashboard analítico
+
+![Dashboard analítico](docs/dashboard_analitico.png)
+
+> Dashboard generado con `python scripts/build_dashboard.py` directamente sobre
+> los Parquet de `lakehouse/gold/` usando matplotlib + DuckDB. Sirve como evidencia
+> visual cuando Docker/Metabase no están disponibles. **Las cinco visualizaciones
+> son las mismas** del dashboard documentado en `docs/metabase_setup.md`, sobre
+> los mismos datos. Indicadores destacados: **8.27% tasa de cancelación · $529K COP
+> ticket promedio · 59.9 días de ventana media de reserva · $96.9B COP en ingresos
+> totales** (200K reservas sintéticas).
+
 ## Limitaciones y evolución futura
 
 - **Datos sintéticos:** el laboratorio usa 200-500K reservas sintéticas con
-  `faker`. La guía del taller (sección 5.3) lo respalda como práctica
-  válida. Migrar al CockroachDB del Módulo 2 es cambiar `EXTRACT_MODE`.
-- **SCD2 simplificado:** el script Python materializa cambios para 15% de
-  los pasajeros; en producción esto vendría de un job CDC (Debezium →
-  Kafka → Bronze) detectando cambios por log.
-- **Sin orquestador real:** `main.py` es secuencial. En producción usaríamos
-  Airflow / Dagster con DAG, retries y SLAs.
-- **Sin Delta/Iceberg:** Parquet plano sin transacciones ACID. Migración a
-  Delta Lake mantendría la API de DuckDB y agregaría time-travel y MERGE.
-- **Sin observabilidad:** el reporte de calidad es un .txt. Siguiente paso:
-  Great Expectations o `dbt-expectations` con resultados publicados.
-
-## Integrantes
-
-- Juan Pablo Cañas Sepúlveda
-- Owen David Pérez Sánchez (`owen@blackroom.com.co`)
-
-## Docente
-
-Roberto Carlos Rahamut Suteu — ITM 2026
+  `faker`. La guía del taller (sección 5.3) lo respalda como práct

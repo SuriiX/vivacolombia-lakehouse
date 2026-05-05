@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" font-family="Arial, sans-serif">
+<style>
+  .bg { fill: #0d1117; }
+  .col-title { fill: #58a6ff; font-size: 16px; font-weight: bold; }
+  .node-source { fill: #21262d; stroke: #8b949e; stroke-width: 1.2; }
+  .node-silver { fill: #0e2818; stroke: #3fb950; stroke-width: 1.5; }
+  .node-gold   { fill: #2a210a; stroke: #d29922; stroke-width: 1.5; }
+  .node-text   { fill: #c9d1d9; font-size: 11px; font-family: monospace; }
+  .edge        { stroke: #484f58; stroke-width: 1.2; fill: none; opacity: 0.7; }
+  .header      { fill: #58a6ff; font-size: 18px; font-weight: bold; }
+  .subheader   { fill: #8b949e; font-size: 11px; }
+  .stats       { fill: #c9d1d9; font-size: 10px; font-family: monospace; }
+</style>
+<rect class="bg" width="1200" height="720"/>
+<text class="header" x="600.0" y="35" text-anchor="middle">VivaColombia Mini-Lakehouse — DAG dbt</text>
+<text class="subheader" x="600.0" y="55" text-anchor="middle">5 modelos Silver · 6 modelos Gold · generado desde dbt/target/manifest.json</text>
+<text class="col-title" x="100" y="85" text-anchor="middle" fill="#8b949e">BRONZE / SOURCES</text>
+<text class="col-title" x="500" y="85" text-anchor="middle" fill="#3fb950">SILVER</text>
+<text class="col-title" x="950" y="85" text-anchor="middle" fill="#d29922">GOLD</text>
+<path class="edge" d="M 585 158.0 C 725.0 158.0, 725.0 148.33333333333334, 865 148.33333333333334"/>
+<path class="edge" d="M 585 274.0 C 725.0 274.0, 725.0 245.0, 865 245.0"/>
+<path class="edge" d="M 585 506.0 C 725.0 506.0, 725.0 341.6666666666667, 865 341.6666666666667"/>
+<path class="edge" d="M 585 390.0 C 725.0 390.0, 725.0 438.33333333333337, 865 438.33333333333337"/>
+<path class="edge" d="M 585 622.0 C 725.0 622.0, 725.0 438.33333333333337, 865 438.33333333333337"/>
+<path class="edge" d="M 585 622.0 C 725.0 622.0, 725.0 535.0, 865 535.0"/>
+<path class="edge" d="M 585 390.0 C 725.0 390.0, 725.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 585 622.0 C 725.0 622.0, 725.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 1035 438.33333333333337 C 950.0 438.33333333333337, 950.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 1035 535.0 C 950.0 535.0, 950.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 1035 341.6666666666667 C 950.0 341.6666666666667, 950.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 1035 148.33333333333334 C 950.0 148.33333333333334, 950.0 631.6666666666667, 865 631.6666666666667"/>
+<path class="edge" d="M 1035 245.0 C 950.0 245.0, 950.0 631.6666666666667, 865 631.6666666666667"/>
+<rect class="node-source" x="15" y="133.33333333333334" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="152.33333333333334" text-anchor="middle">src.canales</text>
+<rect class="node-source" x="15" y="230.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="249.0" text-anchor="middle">src.pagos</text>
+<rect class="node-source" x="15" y="326.6666666666667" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="345.6666666666667" text-anchor="middle">src.pasajeros</text>
+<rect class="node-source" x="15" y="423.33333333333337" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="442.33333333333337" text-anchor="middle">src.reservas</text>
+<rect class="node-source" x="15" y="520.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="539.0" text-anchor="middle">src.rutas</text>
+<rect class="node-source" x="15" y="616.6666666666667" width="170" height="30" rx="6"/>
+<text class="node-text" x="100" y="635.6666666666667" text-anchor="middle">src.vuelos</text>
+<rect class="node-silver" x="415" y="143.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="500" y="162.0" text-anchor="middle">silver_canales</text>
+<rect class="node-silver" x="415" y="259.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="500" y="278.0" text-anchor="middle">silver_pasajeros</text>
+<rect class="node-silver" x="415" y="375.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="500" y="394.0" text-anchor="middle">silver_reservas</text>
+<rect class="node-silver" x="415" y="491.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="500" y="510.0" text-anchor="middle">silver_rutas</text>
+<rect class="node-silver" x="415" y="607.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="500" y="626.0" text-anchor="middle">silver_vuelos</text>
+<rect class="node-gold" x="865" y="133.33333333333334" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="152.33333333333334" text-anchor="middle">dim_canal</text>
+<rect class="node-gold" x="865" y="230.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="249.0" text-anchor="middle">dim_pasajero</text>
+<rect class="node-gold" x="865" y="326.6666666666667" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="345.6666666666667" text-anchor="middle">dim_ruta</text>
+<rect class="node-gold" x="865" y="423.33333333333337" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="442.33333333333337" text-anchor="middle">dim_tiempo</text>
+<rect class="node-gold" x="865" y="520.0" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="539.0" text-anchor="middle">dim_vuelo</text>
+<rect class="node-gold" x="865" y="616.6666666666667" width="170" height="30" rx="6"/>
+<text class="node-text" x="950" y="635.6666666666667" text-anchor="middle">fact_reservas</text>
+<text class="stats" x="20" y="705">Total: 17 nodos · 13 dependencias · Tests definidos: 32 (not_null, unique, relationships) · Equipo: SuriiX</text>
+</svg>
